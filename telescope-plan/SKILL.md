@@ -25,12 +25,16 @@ From the explore output you already know:
 
 ## Step 2: Ask only what the code can't tell you
 
-Ask the user **only** the questions you genuinely cannot answer from the codebase. Typically this is 1-2 questions, not 5. Common ones:
+Ask the user **at most 1-2 questions** — only things the code genuinely can't answer:
 
 - **Activation**: "What does a successful user do in their first session? What's the 'aha moment'?" (business judgment, not in the code)
-- **Marketing channels**: "Where do your users come from?" (traffic sources aren't in the code)
+- **Biggest unknown**: "What's the #1 thing you wish you knew about how people use your product?" (e.g., "where users drop off")
 
-Do NOT ask about: product name (you know it), revenue model (you found it or it's pre-revenue), what the product does (you scanned it). If you can answer it from the explore output, don't ask.
+Do NOT ask about:
+- **Product name** — you already know it from explore
+- **What the product does** — you already scanned it
+- **Revenue model** — you found it (or it's pre-revenue)
+- **Marketing channels** — track all standard channels by default (Organic Search, Social Media, Direct, Referral, Email, Paid Ads). The user is installing analytics precisely because they don't know where users come from yet. Don't ask them to guess.
 
 ## Step 3: Generate tracking-plan.md
 
