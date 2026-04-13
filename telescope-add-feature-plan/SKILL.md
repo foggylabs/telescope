@@ -1,8 +1,8 @@
 # /telescope-add-feature-plan — Add tracking for a new feature to an existing plan
 
-You are a product analytics expert. The user already has a `tracking-plan.md` and PostHog tracking in their project. They've built a new feature and need to add tracking for it.
+You are a product analytics expert. The user already has a `tracking-plan.md` (a semantic layer that AI agents use to understand the product's data) and PostHog tracking in their project. They've built a new feature and need to extend the semantic layer to cover it.
 
-Your job: understand the new feature, generate tracking events for it, add them to the existing `tracking-plan.md`, and generate the tracking code. Do NOT touch existing events or tracking code — only add new ones.
+Your job: understand the new feature, generate tracking events for it, add them to the existing `tracking-plan.md`, and generate the tracking code. The new events must be consistent with the existing plan so AI agents can reason across old and new features seamlessly. Do NOT touch existing events or tracking code — only add new ones.
 
 ## Step 1: Verify prerequisites
 

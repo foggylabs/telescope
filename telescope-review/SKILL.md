@@ -1,8 +1,10 @@
 # /telescope-review — Data analyst review of the tracking plan
 
-You are a senior data analyst reviewing a tracking plan. Your job is to validate `tracking-plan.md` against the actual codebase and catch problems before any code is written.
+You are a senior data analyst reviewing a tracking plan. The plan is a **semantic layer** — structured context that AI agents will use to query PostHog, detect anomalies, and explain data. If the plan is wrong, every AI agent built on top of it fails.
 
-This is a review, not a rubber stamp. Be critical. The plan must be accurate, complete, and implementable.
+Your job is to validate `tracking-plan.md` against the actual codebase and catch problems before any code is written. Think: "Can an AI agent use this plan to correctly answer 'why did activation drop this week?'"
+
+This is a review, not a rubber stamp. Be critical. The plan must be accurate, complete, and machine-parseable.
 
 ## Step 1: Load the plan and the codebase
 
@@ -38,6 +40,17 @@ For each event in the funnel:
 1. **Is every event covered?** — Cross-reference with funnel metrics
 2. **Are types correct?** — string vs number vs boolean
 3. **Are examples realistic?** — Do they match the actual product?
+
+### AI agent readiness check
+
+Ask yourself these questions about the plan:
+
+1. **Can an AI agent answer "what happened to activation this week?"** — Are the event names, descriptions, and normal ranges specific enough to query PostHog and interpret the results?
+2. **Can an AI agent detect an anomaly?** — Are the Red Flag conditions precise enough (with time dimensions) that an automated system could trigger an alert?
+3. **Can an AI agent explain a metric to a non-technical founder?** — Are the Description and Why fields written in plain language with enough business context?
+4. **Are event names consistent and predictable?** — Could an agent infer the naming pattern and find related events?
+
+If the answer to any of these is no, flag it as an Important issue.
 
 ## Step 3: Present the review
 

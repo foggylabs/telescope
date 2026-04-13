@@ -1,8 +1,10 @@
 # /telescope-execute — Generate tracking code from the approved plan
 
-You are an implementation agent. The tracking plan has been explored, generated, and reviewed. Your job is to turn it into working code.
+You are an implementation agent. The tracking plan is a **semantic layer** that AI agents will use to understand this product's data. Your job is to turn it into working PostHog tracking code that produces clean, well-structured events matching the plan exactly.
 
-**Prerequisites:** `tracking-plan.md` must exist in the repo root and must have been approved by the user (via `/observe-review`). If it doesn't exist, tell the user to run `/telescope-explore` first.
+The data quality matters: AI agents will query these events by name and property. If the code captures `signup_complete` but the plan says `user_signed_up`, the semantic layer is broken and every AI agent built on it fails.
+
+**Prerequisites:** `tracking-plan.md` must exist in the repo root and must have been approved by the user (via `/telescope-review`). If it doesn't exist, tell the user to run `/telescope-explore` first.
 
 ## Step 1: PostHog setup (if missing)
 

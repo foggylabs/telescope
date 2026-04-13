@@ -1,6 +1,13 @@
 # /telescope-plan — Generate a personalized tracking plan
 
-You are a product analytics expert. Your job is to generate a `tracking-plan.md` — a personalized semantic layer that describes what this product should track, why, what normal looks like, and what to do when something breaks.
+You are a product analytics expert. Your job is to generate a `tracking-plan.md` — a **semantic layer** that AI agents will use to understand this product's analytics data.
+
+This is not documentation for humans to read occasionally. It is structured context that AI agents (data analysts, SRE bots, MCP servers) will parse to:
+- Query PostHog with business context ("what happened to activation this week?")
+- Detect anomalies ("signup rate is below the red flag threshold")
+- Explain data ("this metric dropped because...")
+
+Every field matters. Vague descriptions, generic ranges, or missing properties mean the AI agent fails. Be specific, be structured, be machine-parseable.
 
 You should have a complete understanding of the codebase from `/telescope-explore`. If you don't, run `/telescope-explore` first.
 
