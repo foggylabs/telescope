@@ -112,17 +112,55 @@ If the plan defines PostHog Actions, these are created in the PostHog UI — not
 -->
 ```
 
-## Step 6: Review and commit
+## Step 6: Verify implementation matches the plan
 
-Show the user:
+Before committing, verify every custom event in the plan is actually implemented. Go through the plan's Funnel Events section and check each `client` or `server` event:
 
-> **Tracking code generated.** Here's what I set up:
-> - PostHog SDK initialized with [config]
-> - `posthog.identify()` on [where]
-> - `posthog.group()` for [group type] (if applicable)
-> - **X custom events** (only business logic — PostHog autocapture handles the rest)
-> - **Y PostHog Actions** to create in the UI
+1. **Read the generated code** — find the actual `posthog.capture()` call for each event
+2. **Event name matches exactly** — the code must use the exact snake_case name from the plan
+3. **All properties are captured** — every property listed in the Event Properties section is present in the capture call
+4. **`distinct_id` is correct** — server-side events use the source documented in the plan
+5. **`$groups` is included** — project-scoped server events include the group parameter
+6. **Placement is correct** — the capture call is in the right file/function (state changes server-side, UI interactions client-side)
+7. **`posthog.identify()` is called** — with the correct person properties (`$set` and `$set_once`)
+8. **`posthog.group()` is called** — on the correct triggers (page load, project switch)
+9. **`posthog.reset()` is called** — in the logout handler
+10. **PostHog init config matches** — compare the actual `posthog.init()` call against the plan's PostHog Configuration section
+
+Present a verification checklist:
+
+```
+## Implementation Verification
+
+| Event | In Plan | In Code | File | Status |
+|-------|---------|---------|------|--------|
+| user_signed_up | server | server | routes/auth.py:145 | OK |
+| email_verified | server | server | routes/auth.py:210 | OK |
+| ... | ... | ... | ... | ... |
+
+### Missing
+- [any events in plan but not in code]
+
+### Extra
+- [any capture calls in code but not in plan]
+
+### Config
+- [ ] posthog.init() matches plan config
+- [ ] posthog.identify() called on login/signup/page load
+- [ ] posthog.group() called on project load/switch
+- [ ] posthog.reset() called on logout
+```
+
+If anything is missing or wrong, fix it before committing.
+
+## Step 7: Commit
+
+Show the user the verification results and:
+
+> **Tracking code generated and verified.** All X events from the plan are implemented.
 > - **N files** modified
+> - PostHog SDK initialized on [apps]
+> - Identity, groups, and reset configured
 >
 > Want me to commit?
 
