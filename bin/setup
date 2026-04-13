@@ -4,7 +4,7 @@ set -euo pipefail
 # Telescope setup — symlinks skill directories into ~/.claude/skills/
 # so Claude Code can discover them.
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SKILLS_DIR="$HOME/.claude/skills"
 
 mkdir -p "$SKILLS_DIR"
