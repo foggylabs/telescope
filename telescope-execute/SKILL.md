@@ -83,7 +83,7 @@ posthog.capture(
 
 ## Step 4: Custom event tracking code
 
-Read the plan's Custom Events section. For each event, generate a `posthog.capture()` call.
+Read the plan's Funnel Events section. For each event marked `client` or `server`, generate a `posthog.capture()` call. **Skip all events marked `auto`** — PostHog handles those.
 
 **Client-side:**
 ```ts

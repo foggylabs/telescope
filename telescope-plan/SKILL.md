@@ -87,26 +87,27 @@ stack:
 ---
 ```
 
-### Section 1: Custom Events (required)
+### Section 1: Funnel Events (required)
 
-These are events PostHog CANNOT autocapture — business logic, server-side state changes, domain-specific milestones. Organized by funnel stage.
+The complete list of events an AI agent needs to understand the product's funnel. This includes BOTH:
+- **Autocaptured events** (`auto`) — PostHog captures these automatically. No custom code needed. Described here so AI agents know what they mean and how to query them.
+- **Custom events** (`client` or `server`) — require `posthog.capture()` calls. The execute phase generates code for these only.
 
 | Column | Description |
 |--------|-------------|
-| Metric | Human-readable name (e.g., "Signup completed") |
-| Event | PostHog event name in snake_case |
-| Capture | `client` or `server` |
-| Description | What this measures and why it matters for the business |
+| Metric | Human-readable name |
+| Event | PostHog event name (`$pageview`, `$autocapture` for auto; snake_case for custom) |
+| Capture | `auto` (PostHog handles it), `client` (custom frontend), or `server` (custom backend) |
+| Description | What this measures, why it matters, and how to query it (e.g., "filter $pageview by URL contains /pricing") |
 
 Stages: **Acquisition**, **Activation**, **Engagement**, **Retention**, **Revenue** (omit Revenue if `stage: pre_revenue`).
 
 Rules:
-- Only include events that need custom `posthog.capture()` calls
-- Do NOT include: page views, button clicks, form submissions, or anything PostHog autocapture handles
-- If you need to track a specific button click (e.g., "Book a demo" CTA), note it as a **PostHog Action** to create in the UI — not a custom event
+- Include autocaptured events where relevant — but mark them `auto` and include the filter/query an AI agent would use (URL, element text, etc.)
 - `server` for state changes (user created, payment completed, resource deleted) — the source of truth
-- `client` only for business-specific UI events that autocapture can't distinguish (e.g., onboarding choice between two paths)
-- Events must map to actual code paths found during exploration
+- `client` for business-specific UI events that autocapture can't distinguish (e.g., onboarding choice between two paths)
+- `auto` events get descriptions but NO code is generated for them
+- Events must map to actual code paths or pages found during exploration
 
 ### Section 2: PostHog Actions (recommended)
 

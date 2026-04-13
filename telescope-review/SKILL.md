@@ -19,15 +19,16 @@ For each issue found, classify it:
 - **Important** — missing coverage, PostHog misconfiguration, or inaccurate assumptions (should fix)
 - **Minor** — style, naming, or nice-to-have improvements (can fix later)
 
-### Custom events review
+### Funnel events review
 
-For each custom event:
+For each event:
 
-1. **Does it duplicate autocapture?** — PostHog already captures `$pageview`, `$pageleave`, and clicks/forms/inputs. If a custom event tracks something autocapture handles, flag it as Critical. Use a PostHog Action instead.
-2. **Does the code path exist?** — Find the actual file and function. If it doesn't exist, flag it.
-3. **Is client/server correct?** — State changes must be server-side. UI-only interactions client-side.
-4. **Are the properties capturable?** — Can they be read at the point of capture?
-5. **Does it re-capture PostHog auto-properties?** — UTMs, referrer, browser, device are already captured. Flag any duplication.
+1. **Is the Capture type correct?** — `auto` for PostHog-handled events, `client` for custom frontend, `server` for custom backend. If a `client` or `server` event tracks something autocapture handles (page views, button clicks, form submissions), flag it — should be `auto` or a PostHog Action.
+2. **Do `auto` events have query context?** — An AI agent reading an `auto` event must know HOW to query it (e.g., "filter $pageview by URL contains /pricing"). If the description doesn't include the filter, flag it.
+3. **Do `client`/`server` events have real code paths?** — Find the actual file and function. If it doesn't exist, flag it.
+4. **Is client/server correct?** — State changes must be server-side. UI-only interactions client-side.
+5. **Are the properties capturable?** — Can they be read at the point of capture?
+6. **Does it re-capture PostHog auto-properties?** — UTMs, referrer, browser, device are already captured. Flag any duplication.
 
 ### PostHog Actions review
 
