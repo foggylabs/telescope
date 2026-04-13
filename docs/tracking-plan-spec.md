@@ -1,13 +1,13 @@
-# Observability Plan Specification v0.1
+# Tracking Plan Specification v0.1
 
-The observability plan (`observability-plan.md`) is a standardized markdown file that describes what a product tracks, why, and what to do when something breaks. It is designed for two consumers:
+The tracking plan (`tracking-plan.md`) is a standardized markdown file that describes what a product tracks, why, and what to do when something breaks. It is designed for two consumers:
 
 1. **Humans** — PMs, founders, and engineers read it to understand the product's metrics
 2. **AI agents** — data analysts, SRE agents, and MCP servers parse it to query and analyze data
 
 ## File Location
 
-`observability-plan.md` in the repository root (same level as README.md).
+`tracking-plan.md` in the repository root (same level as README.md).
 
 ## Format
 
@@ -140,6 +140,44 @@ Detailed schema for each event, useful for tracking code generation and data ana
 | referrer | string | Traffic source | "producthunt", "organic", "direct" |
 | plan | string | Selected plan (if applicable) | "free", "pro" |
 ```
+
+### Section 5: Marketing Attribution (recommended)
+
+Tracks where users come from and which sources drive revenue.
+
+| Column | Type | Required | Description |
+|--------|------|----------|-------------|
+| Channel | string | yes | Marketing channel name (e.g., "Organic Search", "Twitter/X", "Reddit") |
+| Tracking Method | string | yes | How this channel is identified (e.g., "UTM params", "referrer header", "document.referrer") |
+| Key Metrics | string | yes | What to measure for this channel (e.g., "visitors, signups, revenue, revenue/visitor") |
+| Attribution Event | string | yes | PostHog event that captures the source (e.g., `page_viewed` with `$referrer` property) |
+
+#### Standard Channels to Track
+
+| Channel | Tracking Method | Example |
+|---------|----------------|---------|
+| Organic Search | `$referrer` contains google/bing/duckduckgo | SEO traffic |
+| Paid Ads | UTM params (`utm_source`, `utm_medium`, `utm_campaign`) | Google Ads, Meta Ads |
+| Social Media | `$referrer` contains twitter/reddit/linkedin/hackernews | Organic social |
+| Direct | No referrer | Bookmarks, typed URL |
+| Referral | `$referrer` from other sites | Blog mentions, partner links |
+| Email | UTM params with `utm_medium=email` | Newsletter, drip campaigns |
+| Product Hunt | `$referrer` contains producthunt.com | Launch traffic |
+
+#### Revenue Attribution Properties
+
+These properties should be captured on conversion/payment events to enable revenue-per-channel analysis:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| first_touch_source | string | Original traffic source (first visit) | "google", "twitter", "direct" |
+| first_touch_medium | string | Original medium | "organic", "social", "paid" |
+| first_touch_campaign | string | Original campaign (if UTM) | "launch-week", "blog-post-1" |
+| last_touch_source | string | Most recent source before conversion | "direct" |
+| revenue_amount | number | Transaction amount in cents | 2900 |
+| payment_provider | string | Payment processor | "stripe", "lemonsqueezy" |
+
+PostHog already captures `$referrer`, `$referring_domain`, and UTM parameters automatically via `posthog-js`. The skill should ensure these are flowing and add `first_touch_*` properties via `posthog.register()` for attribution across sessions.
 
 ## Machine Parsing
 

@@ -4,9 +4,9 @@
 
 | ID | Skill | Description | Status |
 |----|-------|-------------|--------|
-| OBS-1 | `/observe` (merged) | One skill, full flow: detect PostHog → install if missing → scan codebase → ask 5 business questions → generate observability-plan.md → offer to generate + commit tracking code. | TODO |
-| OBS-2 | Plan format spec | Write `docs/observability-plan-spec.md` defining the standard format: required sections, table columns, machine-readable markers. The spec makes the plan a protocol. | TODO |
-| OBS-3 | Example plans | Generate observability-plan.md for Foggy (dogfood) + OpenTelemetry demo app (showcase). Launch-day deliverable. | TODO |
+| OBS-1 | `/observe` (merged) | One skill, full flow: detect PostHog → install if missing → scan codebase → ask 5 business questions → generate tracking-plan.md → generate + commit tracking code. Includes marketing attribution + revenue tracking. | DONE |
+| OBS-2 | Plan format spec | `docs/tracking-plan-spec.md` — v0.1 with 5 sections: funnel metrics, infrastructure health, runbook, event properties, marketing attribution. | DONE |
+| OBS-3 | Example plans | Generate tracking-plan.md for Foggy (dogfood) + OpenTelemetry demo app (showcase). Launch-day deliverable. | TODO |
 
 ## P2: Expand Distribution (Week 2-3)
 
@@ -25,13 +25,13 @@
 
 | ID | Skill | Description | Status |
 |----|-------|-------------|--------|
-| OBS-7 | `/observe-diagnose` | AI data analyst agent. Reads observability-plan.md + queries PostHog data. "Why did activation drop this week?" Daily digest via Slack/email. $29-99/mo. | TODO |
+| OBS-7 | `/observe-diagnose` | AI data analyst agent. Reads tracking-plan.md + queries PostHog data. "Why did activation drop this week?" Daily digest via Slack/email. $29-99/mo. | TODO |
 
 ## P5: Cross-Tool Moat
 
 | ID | Skill | Description | Status |
 |----|-------|-------------|--------|
-| OBS-8 | `/observe-infra` | OTel + Grafana infrastructure observability. Extends observability-plan.md with infra metrics. | TODO |
+| OBS-8 | `/observe-infra` | OTel + Grafana infrastructure observability. Extends tracking-plan.md with infra metrics. | TODO |
 | OBS-9 | `/observe-alert` | Set up alerts based on plan thresholds. PostHog alerts + Grafana alerting rules. | TODO |
 
 ## Deferred

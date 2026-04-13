@@ -37,7 +37,7 @@ The bottleneck isn't installing an SDK. PostHog's wizard does that in 90 seconds
 
 **Persona:** Can follow a PostHog tutorial, has deployed an app to Vercel or similar, uses AI coding tools daily. Knows what "conversion rate" and "error rate" mean but has never written a tracking plan or configured alerts. Can implement the plan if it tells them exactly what to do.
 
-**Narrowest wedge:** A single Claude Code skill that scans the codebase, asks 5-7 business questions, and generates `observability-plan.md` — a personalized tracking plan with metric descriptions, thresholds, and actions. No tracking code. No dashboard. Just the plan.
+**Narrowest wedge:** A single Claude Code skill that scans the codebase, asks 5-7 business questions, and generates `tracking-plan.md` — a personalized tracking plan with metric descriptions, thresholds, and actions. No tracking code. No dashboard. Just the plan.
 
 The plan is the product. Everything else is implementation that follows from it.
 
@@ -52,7 +52,7 @@ The plan is the product. Everything else is implementation that follows from it.
 ## Premises
 
 1. **The semantic layer is the bottleneck.** AI agents fail at analytics/observability not because they can't query data, but because they don't know WHAT to query or what the data means in business context.
-2. **The plan is more valuable than the code.** A personalized observability-plan.md is the core product. Tracking code is a commodity that PostHog/Claude Code can generate from the plan.
+2. **The plan is more valuable than the code.** A personalized tracking-plan.md is the core product. Tracking code is a commodity that PostHog/Claude Code can generate from the plan.
 3. **The target user knows they need analytics but won't set it up.** Somewhat technical, uses AI tools, hasn't done the thinking work.
 4. **An AI coding skill is the right distribution channel.** Users discover and run this inside Claude Code, Cursor, or similar.
 5. **PostHog might build suggested events for their own platform, but won't build a cross-tool semantic layer.** The moat is being vendor-agnostic — spanning PostHog + OTel/Grafana + Sentry in one plan. (Revised after cross-model challenge.)
@@ -69,7 +69,7 @@ An independent Claude subagent reviewed the session context cold. Key findings:
 ## Approaches Considered
 
 ### Approach A: The Minimum Skill (Minimal Viable) -- CHOSEN
-Single Claude Code skill. Scans codebase, asks 5 business questions, outputs observability-plan.md. Open source. No tracking code, no OTel, no dashboard. Test on Foggy first, then share with beta users from vibe-coding communities.
+Single Claude Code skill. Scans codebase, asks 5 business questions, outputs tracking-plan.md. Open source. No tracking code, no OTel, no dashboard. Test on Foggy first, then share with beta users from vibe-coding communities.
 - Effort: S (days of AI-assisted development)
 - Risk: Low
 - Pros: Ships fast, validates core thesis, zero infrastructure
@@ -77,7 +77,7 @@ Single Claude Code skill. Scans codebase, asks 5 business questions, outputs obs
 - Completeness: 4/10
 
 ### Approach B: Cross-Tool Semantic Layer (Original concept, trimmed)
-Two skills: PostHog analytics + OTel/Grafana. Each generates semantic layer AND tracking code committed to repo. observability-plan.md spans both. Open source. No dashboard.
+Two skills: PostHog analytics + OTel/Grafana. Each generates semantic layer AND tracking code committed to repo. tracking-plan.md spans both. Open source. No dashboard.
 - Effort: M (3-4 weeks)
 - Risk: Medium
 - Pros: Cross-tool is the PostHog differentiator, users get working tracking code not just a plan
@@ -102,7 +102,7 @@ Same as A but: plan format is machine-readable from day 1, AND generates a singl
 
 The founder's plan is: ship A, test internally on Foggy, learn, and expand to B and C if the skill produces genuinely useful plans.
 
-## Plan Format: observability-plan.md (Draft)
+## Plan Format: tracking-plan.md (Draft)
 
 The generated plan must be both human-readable (a PM can review it) and machine-readable (an AI agent can parse it to query analytics). Draft structure:
 
@@ -193,7 +193,7 @@ The skill also auto-detects from codebase: tech stack, routes/pages, auth system
 
 ## The Assignment
 
-**This week:** Submit the deep research prompt. While waiting for results, write the first draft of `observability-plan.md` for Foggy BY HAND. Not with the skill — by hand. Write down what you would track for Foggy, why, and what normal looks like. This becomes the gold standard that the AI skill has to match or beat. If you can't write it manually, the skill can't write it either.
+**This week:** Submit the deep research prompt. While waiting for results, write the first draft of `tracking-plan.md` for Foggy BY HAND. Not with the skill — by hand. Write down what you would track for Foggy, why, and what normal looks like. This becomes the gold standard that the AI skill has to match or beat. If you can't write it manually, the skill can't write it either.
 
 ## What I noticed about how you think
 

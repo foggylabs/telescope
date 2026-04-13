@@ -10,38 +10,34 @@ A set of composable AI coding skills (for Claude Code, Cursor, etc.) that scan y
 
 | Skill | What it does | Status |
 |-------|-------------|--------|
-| `/observe-setup` | Install PostHog SDK, configure auto-capture. Zero to tracking. | Planned |
-| `/observe-plan` | Scan codebase + ask business questions. Generate `observability-plan.md`. | Planned |
-| `/observe-track` | Read the plan. Generate + commit PostHog tracking code. | Planned |
+| `/observe` | Full flow: detect stack, set up PostHog, scan codebase, ask business questions, generate `tracking-plan.md`, commit tracking code | Done |
 | `/observe-improve` | Audit existing tracking vs the plan. Fill gaps. | Planned |
 | `/observe-dashboard` | Generate a single-page dashboard from the plan. | Planned |
 | `/observe-diagnose` | AI data analyst. Reads plan + queries PostHog. | Planned |
 | `/observe-infra` | OTel + Grafana. Infrastructure observability. | Planned |
 | `/observe-alert` | Set up alerts from plan thresholds. | Planned |
 
-## Shared Artifact: `observability-plan.md`
+## Shared Artifact: `tracking-plan.md`
 
-Every skill reads and/or writes this file. It's the semantic layer — a machine-readable AND human-readable plan that describes what each metric means, why it matters, what's normal, and what to do when something breaks.
+Every skill reads and/or writes this file. It's the semantic layer — a machine-readable AND human-readable plan that describes what each metric means, why it matters, what's normal, and what to do when something breaks. Includes funnel metrics, infrastructure health, marketing attribution, runbook, and event properties.
 
 ## Architecture
 
 ```
-User runs skill in Claude Code / Cursor
+User runs /observe in Claude Code / Cursor
       │
       ▼
-┌─────────────────┐
-│  /observe-setup  │ → Install PostHog SDK, configure auto-capture
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  /observe-plan   │ → Scan codebase + questions → observability-plan.md
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  /observe-track  │ → Read plan → generate + commit tracking code
-└────────┬────────┘
+┌─────────────────────────────────────────────┐
+│  /observe (full flow)                       │
+│  1. Detect stack (framework, deployment)    │
+│  2. Set up PostHog (if missing)             │
+│  3. Scan codebase (routes, auth, payments)  │
+│  4. Ask 5 business questions                │
+│  5. Generate tracking-plan.md               │
+│  6. Generate + commit tracking code         │
+│     (events, first-touch attribution,       │
+│      revenue tracking, user identification) │
+└────────┬────────────────────────────────────┘
          │
          ▼
 ┌──────────────────┐
@@ -61,16 +57,15 @@ User runs skill in Claude Code / Cursor
 
 ## Development
 
-Skills are SKILL.md files — prompt engineering + instructions for AI coding tools.
+Skills are markdown files with instructions for AI coding tools.
 
 ```
 foggy-observe/
-  observe-setup/SKILL.md
-  observe-plan/SKILL.md
-  observe-track/SKILL.md
-  ...
+  .claude/skills/
+    observe.md                    # /observe skill (full flow)
   docs/
-    observability-plan-spec.md    # Plan format specification
+    tracking-plan-spec.md         # Plan format specification v0.1
     design-doc.md                 # Product design document
+    deep-research.md              # Market research
   BACKLOG.md                      # Skill backlog and priorities
 ```
