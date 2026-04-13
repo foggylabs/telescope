@@ -22,15 +22,26 @@ Open your AI coding tool and paste this:
 
 | Skill | What it does |
 |-------|-------------|
-| `/telescope-explore` | Scan your codebase — stack, routes, auth, payments, existing analytics |
-| `/telescope-plan` | Generate `tracking-plan.md` — funnel metrics, marketing attribution, event properties, all with context for AI agents |
-| `/telescope-review` | Validate the plan against actual code paths, fix issues |
-| `/telescope-execute` | Generate PostHog tracking code and commit |
-| `/telescope-add-feature-plan` | Add tracking for a new feature to an existing plan |
+| `/telescope-explore` | Scan and understand your codebase — stack, routes, auth, payments, existing analytics. Builds a complete mental model before generating anything. |
+| `/telescope-plan` | Generate `tracking-plan.md` — the semantic layer. Funnel metrics, marketing attribution, event properties — all structured for AI agent consumption. |
+| `/telescope-review` | Data analyst review — validates the plan against actual code paths, checks AI agent readiness, flags issues by severity. |
+| `/telescope-execute` | Generate tracking code — PostHog setup, event capture, first-touch attribution, revenue tracking, user identification. Commits to repo. |
+| `/telescope-add-feature-plan` | Add tracking for a new feature to an existing plan. Point it at your code, it proposes events, updates the semantic layer, and generates tracking code. |
 
-**Initial setup:** `/telescope-explore` → auto-chains through plan → review → execute
+## The flow
 
-**New feature:** `/telescope-add-feature-plan`
+**Initial setup:**
+```
+/telescope-explore → /telescope-plan → /telescope-review → /telescope-execute
+    understand          generate           validate            implement
+```
+
+**New feature:**
+```
+/telescope-add-feature-plan
+```
+
+Each skill auto-triggers the next. The only user gate is after `/telescope-review` — you read the tracking plan and confirm before code is generated.
 
 ## What it generates
 
