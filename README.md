@@ -84,6 +84,12 @@ cd ~/.claude/skills/foggy-observe && git pull
 rm -rf ~/.claude/skills/foggy-observe
 ```
 
+## Philosophy
+
+The vibe-coder doesn't need a dashboard. They need a colleague who watches their app and tells them what matters.
+
+The bottleneck isn't installing an SDK — PostHog's wizard does that in 90 seconds. The bottleneck is the **thinking work**: deciding what to track, why it matters, what normal looks like, and what to do when something breaks. That thinking work takes even an experienced PM about a week. `/observe` does it in 15 minutes.
+
 ## License
 
 MIT
