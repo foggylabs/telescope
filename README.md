@@ -14,7 +14,7 @@ Open your AI coding tool and paste this. The agent does the rest.
 
 **Claude Code:**
 
-> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.claude/skills/telescope && cd ~/.claude/skills/telescope && ./setup` then add a "Telescope" section to CLAUDE.md that lists the available skills: `/telescope-explore` — scan and understand your codebase, `/telescope-plan` — generate a tracking plan, `/telescope-review` — validate the plan, `/telescope-execute` — generate tracking code. Start with `/telescope-explore`.
+> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.claude/skills/telescope && cd ~/.claude/skills/telescope && ./setup` then add a "Telescope" section to CLAUDE.md that lists the available skills: `/telescope-explore` — scan and understand your codebase, `/telescope-plan` — generate a tracking plan, `/telescope-review` — validate the plan, `/telescope-execute` — generate tracking code, `/telescope-add-feature-plan` — add tracking for a new feature. Start with `/telescope-explore` for initial setup or `/telescope-add-feature-plan` for existing projects.
 
 **Cursor:**
 
@@ -36,6 +36,7 @@ Copy the `telescope-*/SKILL.md` files into your tool's skill directory — or pa
 | `/telescope-plan` | Generate `tracking-plan.md` — personalized funnel metrics, marketing attribution, and event properties. |
 | `/telescope-review` | Data analyst review — validates the plan against actual code paths, flags issues by severity, fixes problems before any code is written. |
 | `/telescope-execute` | Generate tracking code — PostHog setup, event capture, first-touch attribution, revenue tracking, user identification. Commits to repo. |
+| `/telescope-add-feature-plan` | Add tracking for a new feature to an existing plan. Point it at your code, it proposes events, updates the plan, and generates tracking code. |
 
 ## The flow
 
@@ -96,7 +97,7 @@ cd ~/.claude/skills/telescope && git pull && ./setup
 ## Uninstall
 
 ```bash
-rm -rf ~/.claude/skills/telescope ~/.claude/skills/telescope-{explore,plan,review,execute}
+rm -rf ~/.claude/skills/telescope ~/.claude/skills/telescope-{explore,plan,review,execute,add-feature-plan}
 ```
 
 ## Philosophy

@@ -9,7 +9,7 @@ SKILLS_DIR="$HOME/.claude/skills"
 
 mkdir -p "$SKILLS_DIR"
 
-SKILLS=(telescope-explore telescope-plan telescope-review telescope-execute)
+SKILLS=(telescope-explore telescope-plan telescope-review telescope-execute telescope-add-feature-plan)
 
 for skill in "${SKILLS[@]}"; do
   src="$SCRIPT_DIR/$skill"
