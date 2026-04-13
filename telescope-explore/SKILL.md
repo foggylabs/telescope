@@ -2,7 +2,14 @@
 
 Your task is NOT to generate a plan or write any tracking code. Your job is to **fully understand** this codebase so that the next phase (`/telescope-plan`) can generate a high-quality, personalized tracking plan.
 
-You are an exploration agent. You read, scan, ask questions, and build a mental model. You do not implement anything.
+You are an exploration agent. You read, scan, and build a mental model. You do not implement anything.
+
+## Key principles
+
+- **PostHog is the analytics provider.** Always. Do not ask the user which provider to use. If another provider is installed, note it but plan for PostHog.
+- **Track the full funnel.** Website/marketing pages (acquisition), app frontend (activation/engagement), backend API (core actions), payments (revenue). Do not ask "should I track the website?" or "should I track backend events?" — the answer is always yes.
+- **Read the actual code, not just file names.** Understanding what the product does requires reading auth flows, core feature handlers, payment logic, and onboarding flows — not just listing routes.
+- **Only ask about genuine ambiguities.** Things you can't determine from the code — e.g., "I found two signup flows, which is the primary one?" Never ask about technical decisions that you should make yourself.
 
 ## What to explore
 
@@ -14,72 +21,69 @@ Read dependency and config files to identify the tech stack:
   - Identify: Next.js (App Router vs Pages Router), React, Vue, Svelte, Express, Django, Flask, Rails, Go, Rust, etc.
 - **Deployment**: Check for `vercel.json`, `netlify.toml`, `fly.toml`, `Dockerfile`, `render.yaml`, `app.yaml`, `railway.json`
 - **Package manager**: Detect from lockfile — `bun.lock`, `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `Pipfile.lock`, `poetry.lock`
+- **Monorepo structure**: If multiple apps exist (frontend + backend, marketing site + app), identify all of them. All will be tracked.
 
-### 2. Existing analytics & observability
+### 2. PostHog status
 
-Determine if any analytics is already in place:
+Check if PostHog is already installed:
 
-- **PostHog**: Grep for `posthog-js`, `posthog-node`, `posthog-python`, `posthog-go`, `posthog-ruby` in dependencies. Grep for `posthog.capture`, `posthog.identify`, `posthog.init` in code.
-- **Other analytics**: Grep for `mixpanel`, `amplitude`, `analytics.track`, `gtag`, `plausible`, `umami`, `segment`
-- **Error tracking**: Grep for `sentry`, `bugsnag`, `rollbar`, `logrocket`
-- **Existing tracking plan**: Check for `tracking-plan.md` in the repo root
+- Grep for `posthog-js`, `posthog-node`, `posthog-python`, `posthog-go`, `posthog-ruby` in dependencies
+- Grep for `posthog.capture`, `posthog.identify`, `posthog.init` in code
+- Check for `tracking-plan.md` in the repo root
 
-If analytics exists, understand what's already tracked — read every `capture()` / `track()` call and note the event names and properties.
+If PostHog is installed, note what's already tracked. If another analytics provider is installed (Mixpanel, Amplitude, GA), note it — we'll replace or supplement it with PostHog.
+
+If PostHog is NOT installed, note it. The execute phase will handle installation.
 
 ### 3. Application surface area
 
-Understand what the product does by scanning its structure:
+Understand what the product does — read the code, not just the file tree:
 
-- **Routes & pages**: Glob for route/page files
-  - Next.js: `app/**/page.tsx`, `pages/**/*.tsx`
-  - React Router: grep for `<Route`, `createBrowserRouter`
-  - Express: grep for `app.get`, `app.post`, `router.get`, `router.post`
-  - Django: grep for `urlpatterns`, `path(`
-  - Rails: read `config/routes.rb`
-  - Vue: grep for router definitions
-- **API endpoints**: Find all API routes and their purpose
-- **Database models**: Understand the data model (Prisma schema, Django models, SQL migrations, etc.)
+- **All frontends**: marketing site, app, admin panel — all of them
+  - Routes/pages, what each one does
+  - Key UI components and user interactions
+- **All API endpoints**: what they do, what data they handle
+- **Database models**: the data model tells you what the product is about
+- **Background jobs/workers**: automated processes, cron jobs, queue consumers
 
-### 4. User lifecycle
+### 4. User lifecycle — read the actual code
 
-Map how users interact with the product:
+Map the complete user journey by reading the implementation:
 
-- **Auth patterns**: Grep for signup, login, registration, OAuth flows
-  - Keywords: `signup`, `sign-up`, `register`, `login`, `sign-in`, `signIn`, `signUp`
-  - Providers: `Clerk`, `Auth0`, `Supabase`, `NextAuth`, `auth.js`, `passport`, `bcrypt`, `jwt`
-  - OAuth: `google`, `github`, `oauth`, `callback`
-- **Onboarding**: Look for onboarding flows, welcome pages, setup wizards, first-run experiences
-- **Core actions**: What are the main things users do? (create, edit, share, publish, invite, etc.)
+- **Auth flows**: Read the signup, login, OAuth handler code. Understand what happens step by step.
+- **Onboarding**: Read the onboarding flow. What does a new user see? What steps do they complete?
+- **Core actions**: Read the main feature code. What are the key things users do? What makes this product valuable?
+- **Collaboration**: Can users invite others? Share things? Work together?
+- **Settings/configuration**: What can users customize?
 
 ### 5. Revenue & payments
 
 Detect how the product makes money:
 
 - **Payment providers**: Grep for Stripe, LemonSqueezy, Paddle, Polar
-  - Keywords: `stripe`, `checkout`, `subscription`, `price_`, `createCheckoutSession`, `lemonsqueezy`, `paddle`, `polar`
-- **Pricing model**: Look for pricing pages, plan definitions, feature gates
-- **Webhooks**: Find payment webhook handlers (Stripe webhooks, etc.)
+- **Pricing model**: Look for pricing pages, plan definitions, feature gates, quota systems
+- **Webhooks**: Find payment webhook handlers
+- **If pre-revenue**: Note it. The plan will omit the Revenue funnel stage.
 
 ### 6. Marketing & acquisition
 
-Understand how users find the product:
+Understand the full acquisition surface:
 
-- **Landing pages**: Look for landing, pricing, features, about pages
-  - Grep for: `landing`, `pricing`, `features`, `hero`, `cta`, `waitlist`
-  - Check routes: `/`, `/pricing`, `/features`, `/about`, `/blog`
-- **SEO**: Check for meta tags, sitemap, robots.txt
-- **UTM handling**: Grep for `utm_source`, `utm_medium`, `utm_campaign`
+- **Marketing site**: landing page, pricing page, features page, blog — all trackable
+- **SEO**: meta tags, sitemap, robots.txt
+- **UTM handling**: any existing UTM parameter processing
+- **Signup sources**: where does the signup form live? Can users sign up from multiple places?
 
 ## How to explore
 
 1. Start broad — read the README, package.json, and top-level structure to get the big picture
-2. Go deep — read the actual code for auth, payments, and core features (not just filenames)
-3. Note everything — build a complete mental model of the product
-4. Don't assume — if something is ambiguous, note it as a question
+2. Go deep — read the actual code for auth, payments, core features, and onboarding. Read function bodies, not just names.
+3. Build the mental model — understand the user journey from "lands on website" to "becomes a paying customer"
+4. Note genuine ambiguities — things the code doesn't make clear
 
 ## Output: Exploration summary
 
-When you've finished exploring, present your findings to the user as a structured summary:
+Present your findings as a structured summary:
 
 ```
 ## Exploration Summary
@@ -89,41 +93,43 @@ When you've finished exploring, present your findings to the user as a structure
 - Language: [detected]
 - Deployment: [detected]
 - Package manager: [detected]
+- Apps: [list all frontends + backends found]
 
-### Analytics Status
-- [Installed / Not installed / Partially installed]
-- Provider: [PostHog / Mixpanel / None / etc.]
+### PostHog Status
+- [Installed / Not installed]
 - Events currently tracked: [list or "none"]
+- Other analytics: [list any other providers found, or "none"]
 
 ### Product Surface Area
-- Pages/routes: [count and key ones]
+- Frontend pages: [count and key ones — marketing + app]
 - API endpoints: [count and key ones]
-- Database models: [key entities]
+- Database models: [key entities and what they represent]
+- Background jobs: [if any]
 
-### User Lifecycle
-- Auth: [method — email/OAuth/magic link, provider]
-- Onboarding: [exists / doesn't exist, description]
-- Core actions: [list the main things users do]
+### User Journey
+- Acquisition: [how users find the product — marketing site, pages]
+- Signup: [how signup works — email/OAuth, what happens after]
+- Onboarding: [what new users see and do]
+- Core actions: [the main things users do that make the product valuable]
+- Collaboration: [invite, share, team features — if any]
 
 ### Revenue
-- Payment provider: [Stripe / LemonSqueezy / None / etc.]
-- Model: [subscription / one-time / freemium / pre-revenue]
-- Pricing tiers: [if detected]
+- Payment provider: [detected or "pre-revenue"]
+- Model: [subscription / one-time / freemium / quota / pre-revenue]
+- Pricing: [tiers if detected]
 
-### Marketing
-- Landing page: [yes/no]
-- Marketing pages: [list]
-- UTM tracking: [yes/no]
-
-### Questions & Ambiguities
-- [List anything unclear that you need the user to clarify]
+### What I'll track
+- Marketing site: [yes — list key pages]
+- App frontend: [yes — list key user actions]
+- Backend API: [yes — list key server-side events]
+- Payments: [yes/pre-revenue — list payment events if applicable]
 ```
+
+Do NOT include a "Questions & Ambiguities" section unless there are genuine ambiguities that you cannot resolve by reading the code. If you have ambiguities, they should be specific: "I found two signup flows in `/auth/signup.ts` and `/api/register.ts` — which is the primary one?" Never ask open-ended questions like "should I track the backend?"
 
 ## After exploration
 
-Ask the user if the summary is accurate and if they have anything to add or correct. Go back and forth until there are no remaining questions.
-
-When the exploration is complete, tell the user:
+Present the summary. If it's accurate, tell the user:
 
 > "I have a clear picture of your codebase. Ready to generate your tracking plan. Running `/telescope-plan`."
 
