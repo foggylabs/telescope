@@ -14,26 +14,26 @@ Open your AI coding tool and paste this. The agent does the rest.
 
 **Claude Code:**
 
-> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.claude/skills/telescope` then add a "Telescope" section to CLAUDE.md that lists the available skills: `/telescope-explore` — scan and understand your codebase, `/telescope-plan` — generate a tracking plan, `/telescope-review` — validate the plan, `/telescope-execute` — generate tracking code. Start with `/telescope-explore`.
+> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.claude/skills/telescope && cd ~/.claude/skills/telescope && ./setup` then add a "Telescope" section to CLAUDE.md that lists the available skills: `/telescope-explore` — scan and understand your codebase, `/telescope-plan` — generate a tracking plan, `/telescope-review` — validate the plan, `/telescope-execute` — generate tracking code. Start with `/telescope-explore`.
 
 **Cursor:**
 
-> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git .cursor/skills/telescope` then add a "Telescope" section to your project instructions that lists the available skills: `/telescope-explore`, `/telescope-plan`, `/telescope-review`, `/telescope-execute`. Start with `/telescope-explore`.
+> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.telescope && cd ~/.telescope && ./setup` then add a "Telescope" section to your project instructions that lists the available skills: `/telescope-explore`, `/telescope-plan`, `/telescope-review`, `/telescope-execute`. Start with `/telescope-explore`.
 
 **Codex:**
 
-> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.codex/telescope` then add a "Telescope" section to AGENTS.md that lists the available skills: `/telescope-explore`, `/telescope-plan`, `/telescope-review`, `/telescope-execute`. Start with `/telescope-explore`.
+> Install telescope: run `git clone --single-branch --depth 1 https://github.com/foggylabs/telescope.git ~/.telescope && cd ~/.telescope && ./setup` then add a "Telescope" section to AGENTS.md that lists the available skills: `/telescope-explore`, `/telescope-plan`, `/telescope-review`, `/telescope-execute`. Start with `/telescope-explore`.
 
 **Other AI coding tools:**
 
-Copy the `skills/` directory into your tool's skill directory — or paste skill contents as custom instructions.
+Copy the `telescope-*/SKILL.md` files into your tool's skill directory — or paste skill contents as custom instructions.
 
 ## Skills
 
 | Skill | What it does |
 |-------|-------------|
 | `/telescope-explore` | Scan and understand your codebase — stack, routes, auth, payments, existing analytics. Builds a complete mental model before generating anything. |
-| `/telescope-plan` | Generate `tracking-plan.md` — personalized funnel metrics, marketing attribution, infrastructure health, runbook, and event properties. |
+| `/telescope-plan` | Generate `tracking-plan.md` — personalized funnel metrics, marketing attribution, and event properties. |
 | `/telescope-review` | Data analyst review — validates the plan against actual code paths, flags issues by severity, fixes problems before any code is written. |
 | `/telescope-execute` | Generate tracking code — PostHog setup, event capture, first-touch attribution, revenue tracking, user identification. Commits to repo. |
 
@@ -90,13 +90,13 @@ Payment providers: Stripe, LemonSqueezy, Paddle, Polar
 ## Updating
 
 ```bash
-cd ~/.claude/skills/telescope && git pull
+cd ~/.claude/skills/telescope && git pull && ./setup
 ```
 
 ## Uninstall
 
 ```bash
-rm -rf ~/.claude/skills/telescope
+rm -rf ~/.claude/skills/telescope ~/.claude/skills/telescope-{explore,plan,review,execute}
 ```
 
 ## Philosophy
