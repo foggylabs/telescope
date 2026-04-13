@@ -66,8 +66,6 @@ That's it. The pipeline runs from there. Takes about 15 minutes for a typical pr
 **`tracking-plan.md`** — a personalized semantic layer:
 - Funnel metrics (Acquisition → Activation → Engagement → Retention → Revenue)
 - Marketing attribution (which channels bring users, revenue per visitor)
-- Infrastructure health (error rates, latency, uptime)
-- Runbook (actionable steps for every red flag)
 - Event properties (schema for each tracked event)
 
 **Tracking code** — placed in the correct files:

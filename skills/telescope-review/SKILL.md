@@ -33,17 +33,6 @@ For each event in the funnel:
 2. **Is the tracking method correct?** — Will `$referrer` / UTM params actually capture this channel?
 3. **Are revenue attribution properties capturable?** — Can `first_touch_source` and `revenue_amount` actually be read from the payment flow?
 
-### Infrastructure health review
-
-1. **Are the sources available?** — Can the detected deployment platform actually provide these metrics?
-2. **Are the thresholds appropriate?** — For the product's stage and scale
-
-### Runbook review
-
-1. **Does every red flag have a runbook entry?** — Cross-reference funnel metrics and marketing attribution red flags
-2. **Are the steps actionable?** — Can someone using AI coding tools follow them?
-3. **Are PostHog queries specific enough?** — Would they actually return useful data?
-
 ### Event properties review
 
 1. **Is every event covered?** — Cross-reference with funnel metrics

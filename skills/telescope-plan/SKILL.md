@@ -92,28 +92,7 @@ Include channels the user mentioned + standard ones (Organic Search, Paid Ads, S
 | revenue_amount | number | Transaction amount in cents |
 | payment_provider | string | Payment processor used |
 
-### Section 3: Infrastructure Health (optional)
-
-| Column | Description |
-|--------|-------------|
-| Metric | Human-readable name |
-| Source | Where it comes from (e.g., "server framework", "Vercel metrics") |
-| Description | What it measures |
-| Threshold | Normal operating range |
-| Action | What to do when breached |
-
-Standard entries: error rate (5xx), P95 latency, uptime. Tailor to the detected deployment platform.
-
-### Section 4: Runbook (required)
-
-Under `## When Something Breaks`, add a subsection for every red flag in the plan. Each subsection has numbered, actionable steps.
-
-Rules:
-- Steps must be actionable by someone using AI coding tools, not a DevOps engineer
-- Include specific PostHog queries, URLs, or commands where possible
-- Include marketing red flags: "Top channel traffic dropped >50%", "Revenue per visitor declining"
-
-### Section 5: Event Properties (recommended)
+### Section 3: Event Properties (recommended)
 
 Schema for each event. Under `## Event Properties`, add a subsection per event with a table:
 
@@ -133,9 +112,8 @@ Before saving, verify:
 2. Event names are valid snake_case
 3. "Normal" ranges are specific to this product type
 4. "Red Flag" conditions include a time dimension
-5. Every red flag has a runbook entry
-6. Events map to real code paths found during exploration (not invented features)
-7. Marketing attribution covers the channels the user mentioned
+5. Events map to real code paths found during exploration (not invented features)
+6. Marketing attribution covers the channels the user mentioned
 
 ## After generating
 
