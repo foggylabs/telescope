@@ -6,7 +6,7 @@ The data quality matters: AI agents will query these events by name and property
 
 **Prerequisites:** `tracking-plan.md` must exist in the repo root and must have been approved by the user (via `/telescope-review`). If it doesn't exist, tell the user to run `/telescope-explore` first.
 
-## Step 1: PostHog setup (if missing)
+## Step 1: PostHog SDK setup (if missing)
 
 Check if PostHog SDK is installed in the project dependencies.
 
@@ -14,81 +14,100 @@ If **not installed**:
 
 1. Tell the user: "You need a PostHog account (free — 1M events/month). Sign up at posthog.com if you haven't already."
 2. Install the SDK for the detected stack:
-   - **Next.js / React / Vue / Svelte**: `npm install posthog-js` (or yarn/pnpm/bun based on lockfile)
-   - **Node.js backend**: `npm install posthog-node`
-   - **Python**: `pip install posthog`
-   - **Go**: `go get github.com/posthog/posthog-go`
-   - **Ruby**: `gem install posthog-ruby`
+   - **Frontend**: `posthog-js` (via npm/yarn/pnpm/bun based on lockfile)
+   - **Node.js backend**: `posthog-node`
+   - **Python backend**: `posthog` (via pip/uv)
+   - **Go backend**: `posthog-go`
+   - **Ruby backend**: `posthog-ruby`
 3. Ask the user for their PostHog project API key
-4. Add PostHog initialization code to the correct entry point:
+4. Add PostHog initialization code to the correct entry point
 
-**Next.js App Router** — `app/providers.tsx`:
-```tsx
-'use client'
-import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-import { useEffect } from 'react'
-
-export function PHProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: 'https://us.i.posthog.com',
-      person_profiles: 'identified_only',
-      capture_pageview: true,
-      capture_pageleave: true,
-    })
-  }, [])
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>
-}
-```
-
-**Next.js Pages Router** — `pages/_app.tsx`:
-```tsx
-import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-import { useEffect } from 'react'
-
-export default function App({ Component, pageProps }) {
-  useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: 'https://us.i.posthog.com',
-      person_profiles: 'identified_only',
-    })
-  }, [])
-  return <PostHogProvider client={posthog}><Component {...pageProps} /></PostHogProvider>
-}
-```
-
-**React + Vite** — `src/main.tsx`:
-```tsx
-import posthog from 'posthog-js'
-posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-  api_host: 'https://us.i.posthog.com',
-  person_profiles: 'identified_only',
-})
-```
-
-**Express / Node.js** — `src/analytics.ts`:
-```ts
-import { PostHog } from 'posthog-node'
-const posthog = new PostHog(process.env.POSTHOG_KEY!, { host: 'https://us.i.posthog.com' })
-export default posthog
-```
-
-**Python / Django / Flask** — `analytics.py`:
-```python
-from posthog import Posthog
-posthog = Posthog(os.environ['POSTHOG_KEY'], host='https://us.i.posthog.com')
-```
+**Critical init options** (read from the PostHog Configuration Notes in the plan):
+- `person_profiles: 'identified_only'` — always set this
+- `capture_pageview: 'history_change'` — for SPAs (React, Vue, Svelte with client-side routing)
+- `cross_subdomain_cookie: true` — if product spans subdomains
+- `api_host: 'https://us.i.posthog.com'` (or `eu.i.posthog.com`)
 
 Store the API key in an environment variable appropriate for the framework. Add the env var name to `.env.example` (create if needed).
 
-If PostHog is **already installed**: skip this step, confirm the existing setup.
+If PostHog is **already installed**: verify the init options match what the plan requires. Fix if needed.
 
-## Step 2: Generate event tracking code
+## Step 2: User identification
 
-Read `tracking-plan.md`. For each event in the funnel metrics, generate a `posthog.capture()` call and place it in the correct file.
+This must be implemented BEFORE event tracking. Without it, all events are anonymous.
 
+**Client-side (`posthog-js`):**
+
+Call `posthog.identify()` on every authenticated page load and immediately after login/signup:
+
+```ts
+posthog.identify(userId, {
+  // $set properties (updated each time)
+  email: user.email,
+  name: user.name,
+  // add other $set person properties from the plan
+})
+```
+
+Also set `$set_once` properties on signup:
+
+```ts
+posthog.identify(userId, {}, {
+  // $set_once properties (immutable)
+  signup_method: 'google',
+  signup_date: new Date().toISOString(),
+})
+```
+
+**Server-side (`posthog-python` / `posthog-node`):**
+
+Every server-side `capture()` call requires `distinct_id`. Get it from the authenticated session:
+
+```python
+# Python
+posthog.capture(
+    distinct_id=request.user.id,  # from authenticated session
+    event='user_signed_up',
+    properties={ ... }
+)
+```
+
+```ts
+// Node.js
+posthog.capture({
+    distinctId: req.user.id,  // from authenticated session
+    event: 'user_signed_up',
+    properties: { ... }
+})
+```
+
+## Step 3: Group analytics (for multi-tenant / B2B)
+
+If the plan defines group types, implement `posthog.group()`:
+
+```ts
+// Client-side — call on login and project/workspace switch
+posthog.group('project', projectId, {
+  name: projectName,
+  // add other group properties from the plan
+})
+```
+
+```python
+# Server-side — include group in capture calls
+posthog.capture(
+    distinct_id=user_id,
+    event='thread_created',
+    properties={ ... },
+    groups={ 'project': project_id }
+)
+```
+
+## Step 4: Generate event tracking code
+
+Read `tracking-plan.md`. For each custom event in the funnel metrics, generate tracking code.
+
+**Client-side events** (`Capture: client` in the plan):
 ```ts
 posthog.capture('event_name', {
   property_1: value1,
@@ -96,34 +115,56 @@ posthog.capture('event_name', {
 })
 ```
 
-**Placement rules** (based on codebase exploration):
-- Page view events → page components or route handlers
-- Button/action events → click handlers or form submit handlers
-- API events → API route handlers or server actions
-- Payment events → payment webhook handlers or success callbacks
-- Auth events → signup/login success handlers
+**Server-side events** (`Capture: server` in the plan):
+```python
+posthog.capture(
+    distinct_id=request.user.id,
+    event='event_name',
+    properties={
+        'property_1': value1,
+        'property_2': value2,
+    }
+)
+```
 
-**Framework-specific patterns:**
-- **Next.js App Router**: `useEffect` for page-level, event handlers for actions, server actions for server-side
-- **Next.js Pages Router**: `useEffect` or event handlers
-- **React SPA**: Event handlers directly
-- **Express/Node**: Capture in route handlers or middleware
-- **Python/Django**: Capture in views or middleware
+**Placement rules:**
+- Client: place in click handlers, form submit handlers, component effects
+- Server: place in route handlers, service methods, webhook handlers, background job completions
+- Follow the plan's `Capture` column — don't second-guess client vs server
 
-## Step 3: First-touch attribution
+**Do NOT duplicate autocapture events.** PostHog already captures:
+- `$pageview` (with URL, referrer, UTMs) on every page/route change
+- `$pageleave` (with scroll depth)
+- `$autocapture` (clicks on buttons/links/forms)
 
-Add first-touch attribution capture to the app's entry point (same file as PostHog init or root layout):
+Only add custom `posthog.capture()` calls for events that autocapture doesn't cover.
+
+## Step 5: First-touch attribution
+
+Add first-touch attribution on the **client-side entry point** (runs on first visit, persists across sessions):
 
 ```ts
-const urlParams = new URLSearchParams(window.location.search)
-const referrer = document.referrer
-
 posthog.register_once({
-  first_touch_source: urlParams.get('utm_source') || getReferrerSource(referrer),
-  first_touch_medium: urlParams.get('utm_medium') || getReferrerMedium(referrer),
+  first_touch_source: urlParams.get('utm_source') || getReferrerSource(document.referrer),
+  first_touch_medium: urlParams.get('utm_medium') || getReferrerMedium(document.referrer),
   first_touch_campaign: urlParams.get('utm_campaign') || '',
 })
+```
 
+Also set as person properties on identify (so attribution survives across devices):
+
+```ts
+posthog.identify(userId, {}, {
+  // $set_once — only written on first identify
+  first_touch_source: firstTouchSource,
+  first_touch_medium: firstTouchMedium,
+  first_touch_campaign: firstTouchCampaign,
+})
+```
+
+Include referrer classification helpers:
+
+```ts
 function getReferrerSource(referrer: string): string {
   if (!referrer) return 'direct'
   const domain = new URL(referrer).hostname
@@ -146,44 +187,17 @@ function getReferrerMedium(referrer: string): string {
 }
 ```
 
-This runs once on first visit and persists across sessions via `register_once`.
-
-## Step 4: User identification
-
-Add `posthog.identify()` in the auth flow — after signup or login:
-
-```ts
-posthog.identify(userId, {
-  email: user.email,
-  name: user.name,
-})
-```
-
-Place this where the auth provider confirms the user is logged in.
-
-## Step 5: Revenue tracking
-
-On payment/conversion events, capture revenue with attribution:
-
-```ts
-posthog.capture('payment_completed', {
-  revenue_amount: amountInCents,
-  payment_provider: 'stripe',
-  plan: planName,
-  // first_touch_* properties are auto-included via register_once
-})
-```
-
 ## Step 6: Review and commit
 
 Show the user a summary:
 
 > **Tracking code generated.** Here's what I set up:
-> - **X events** across **Y funnel stages**
-> - **Z marketing channels** tracked (first-touch attribution)
+> - PostHog SDK initialized with [config options]
+> - `posthog.identify()` on [login/signup/page load]
+> - `posthog.group()` for [group type] (if applicable)
+> - **X custom events** across **Y funnel stages**
+> - First-touch attribution via `register_once()` + `$set_once`
 > - **N files** modified
-> - Revenue tracking on payment events
-> - User identification in auth flow
 >
 > Want me to commit?
 

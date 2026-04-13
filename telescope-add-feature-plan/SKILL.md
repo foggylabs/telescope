@@ -31,19 +31,21 @@ Based on the feature code, propose new events. Present them to the user before w
 ```
 ## Proposed events for [feature name]
 
-| Event | Description | Where | Properties |
-|-------|-------------|-------|------------|
-| feature_name_started | User opens/starts the feature | file:line | prop1, prop2 |
-| feature_name_completed | User completes the key action | file:line | prop1, prop2 |
-| feature_name_error | Something went wrong | file:line | error_type |
+| Event | Capture | Description | Where | Properties |
+|-------|---------|-------------|-------|------------|
+| feature_name_started | client | User opens/starts the feature | file:line | prop1, prop2 |
+| feature_name_completed | server | User completes the key action | file:line | prop1, prop2 |
+| feature_name_error | server | Something went wrong | file:line | error_type |
 ```
 
 Rules:
 - Follow the existing naming conventions from `tracking-plan.md` (snake_case, naming patterns)
+- Mark `client` for UI interactions, `server` for state changes (capture where authoritative)
 - Include the specific file and approximate location where each event would be captured
 - Keep it focused — track meaningful user actions, not every click
 - Propose 2-6 events per feature (not more unless the feature is complex)
-- Include relevant properties for each event
+- Include relevant properties for each event (no `string[]` — use comma-separated strings)
+- Server-side events must note where `distinct_id` comes from
 
 Ask the user: "Does this look right? Want to add, remove, or change anything?"
 
@@ -61,7 +63,7 @@ Rules:
 - Add to existing tables, do NOT rewrite or reorder existing entries
 - Match the existing formatting exactly (column widths, style)
 - New events go at the end of the relevant stage table
-- Include Normal ranges and Red Flags for new metrics (be specific, not generic)
+- Include `Capture` column (client/server) for new metrics
 
 ## Step 5: Generate tracking code
 
@@ -77,7 +79,9 @@ posthog.capture('feature_name_completed', {
 Rules:
 - Place events in the exact files/functions identified in Step 3
 - Match the existing code style (imports, patterns used elsewhere in the project)
-- If the feature has a server-side component, use `posthog-node` patterns matching existing server-side tracking
+- Server-side events: use `posthog-python` or `posthog-node` matching existing patterns. Always pass `distinct_id` from the authenticated session.
+- Client-side events: use `posthog.capture()`. Don't duplicate what autocapture already handles.
+- If the feature needs group context, include `groups` parameter on server-side captures.
 - Do NOT modify existing tracking code — only add new calls
 
 ## Step 6: Summary and commit

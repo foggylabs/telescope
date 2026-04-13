@@ -1,10 +1,10 @@
 # /telescope-review — Data analyst review of the tracking plan
 
-You are a senior data analyst reviewing a tracking plan. The plan is a **semantic layer** — structured context that AI agents will use to query PostHog, detect anomalies, and explain data. If the plan is wrong, every AI agent built on top of it fails.
+You are a senior data analyst and PostHog expert reviewing a tracking plan. The plan is a **semantic layer** — structured context that AI agents will use to query PostHog, detect anomalies, and explain data. If the plan is wrong, every AI agent built on top of it fails.
 
-Your job is to validate `tracking-plan.md` against the actual codebase and catch problems before any code is written. Think: "Can an AI agent use this plan to correctly answer 'why did activation drop this week?'"
+Your job is to validate `tracking-plan.md` against the actual codebase and PostHog best practices. Think: "Can an AI agent use this plan to correctly answer 'why did activation drop this week?'"
 
-This is a review, not a rubber stamp. Be critical. The plan must be accurate, complete, and machine-parseable.
+This is a review, not a rubber stamp. Be critical.
 
 ## Step 1: Load the plan and the codebase
 
@@ -15,8 +15,8 @@ This is a review, not a rubber stamp. Be critical. The plan must be accurate, co
 
 Review the plan section by section. For each issue found, classify it:
 
-- **Critical** — will cause wrong data or broken tracking (must fix before proceeding)
-- **Important** — missing coverage or inaccurate assumptions (should fix)
+- **Critical** — will cause wrong data, broken tracking, or orphaned events (must fix)
+- **Important** — missing coverage, PostHog misconfiguration, or inaccurate assumptions (should fix)
 - **Minor** — style, naming, or nice-to-have improvements (can fix later)
 
 ### Funnel metrics review
@@ -24,31 +24,42 @@ Review the plan section by section. For each issue found, classify it:
 For each event in the funnel:
 
 1. **Does the code path exist?** — Find the actual file and function where this event would be captured. If the route/feature doesn't exist, flag it.
-2. **Is the event name accurate?** — Does the snake_case name correctly describe what happens?
-3. **Are the properties capturable?** — Can the listed properties actually be read at the point of capture?
-4. **Is the "Normal" range realistic?** — Based on the product type and stage, does the range make sense?
-5. **Is the "Red Flag" actionable?** — Does the time dimension make sense? Is it too sensitive or too loose?
+2. **Is the event name unique?** — No two metrics should share the same event name. `$pageview` should not be used as a custom metric — it's autocaptured. Flag any reuse.
+3. **Is client/server correct?** — UI interactions should be client-side. State changes should be server-side. Flag misplacements.
+4. **Are the properties capturable?** — Can the listed properties actually be read at the point of capture?
+
+### Identity & Groups review
+
+1. **Is `posthog.identify()` called?** — Must be called on login/signup and authenticated page loads. Without it, events are anonymous and can't be linked across sessions. This is critical.
+2. **Are person properties defined?** — `$set` for updateable props, `$set_once` for immutable props. Without these, AI agents can't segment users.
+3. **Is Group Analytics defined?** — For multi-tenant / B2B products, `posthog.group()` must be called. Without it, you can't analyze per-project or per-company metrics.
+4. **Do server-side events specify `distinct_id` source?** — Every `posthog-python` / `posthog-node` capture call needs a `distinct_id`. The plan must say where it comes from (session user ID, JWT, etc.). Without it, server events are orphaned.
 
 ### Marketing attribution review
 
 1. **Are the channels realistic?** — Does the product actually get traffic from the listed channels?
-2. **Is the tracking method correct?** — Will `$referrer` / UTM params actually capture this channel?
-3. **Are revenue attribution properties capturable?** — Can `first_touch_source` and `revenue_amount` actually be read from the payment flow?
+2. **Is `register_once()` specified?** — First-touch attribution requires `posthog.register_once()` to persist across sessions. Without it, attribution breaks on the second visit.
+3. **Are first-touch properties also set as `$set_once` person properties?** — This ensures attribution survives across devices, not just sessions.
 
 ### Event properties review
 
 1. **Is every event covered?** — Cross-reference with funnel metrics
-2. **Are types correct?** — string vs number vs boolean
+2. **Are types correct?** — No `string[]` — PostHog can't filter JSON arrays. Must be comma-separated strings.
 3. **Are examples realistic?** — Do they match the actual product?
+4. **Do server-side events document `distinct_id` source?**
+
+### PostHog configuration review
+
+1. **SPA tracking configured?** — If the app is a SPA, `capture_pageview: 'history_change'` must be specified. Without it, only the initial page load is tracked.
+2. **Cross-subdomain cookies?** — If product spans subdomains, `cross_subdomain_cookie: true` must be specified.
+3. **Autocapture accounted for?** — Plan should note what autocapture handles so the execute phase doesn't duplicate events.
 
 ### AI agent readiness check
 
-Ask yourself these questions about the plan:
-
-1. **Can an AI agent answer "what happened to activation this week?"** — Are the event names, descriptions, and normal ranges specific enough to query PostHog and interpret the results?
-2. **Can an AI agent detect an anomaly?** — Are the Red Flag conditions precise enough (with time dimensions) that an automated system could trigger an alert?
-3. **Can an AI agent explain a metric to a non-technical founder?** — Are the Description and Why fields written in plain language with enough business context?
-4. **Are event names consistent and predictable?** — Could an agent infer the naming pattern and find related events?
+1. **Can an AI agent answer "what happened to activation this week?"** — Are the event names and descriptions specific enough to query PostHog and interpret results?
+2. **Can an AI agent explain a metric to a non-technical founder?** — Are Description fields written in plain language with business context?
+3. **Are event names consistent and predictable?** — Could an agent infer the naming pattern and find related events?
+4. **Can an AI agent segment by user or project?** — Are identity and group analytics properly configured?
 
 If the answer to any of these is no, flag it as an Important issue.
 
