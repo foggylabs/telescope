@@ -96,13 +96,3 @@ cd ~/.claude/skills/telescope && git pull && ./setup
 ```bash
 rm -rf ~/.claude/skills/telescope ~/.claude/skills/telescope-{explore,plan,review,execute,add-feature-plan}
 ```
-
-## Philosophy
-
-AI agents don't need better models. They need better infrastructure to operate on. The missing layer is context — a semantic layer that describes what each metric means, what's normal, and what to do when something breaks.
-
-The bottleneck isn't installing an SDK — PostHog's wizard does that in 90 seconds. The bottleneck is the **thinking work**: deciding what to track, why it matters, what normal looks like, and what to do when something breaks. That thinking work takes even an experienced PM about a week. Telescope does it in 15 minutes.
-
-## License
-
-MIT
