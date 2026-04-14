@@ -101,16 +101,51 @@ posthog.capture(
 
 Place in the exact code paths the plan references. Match existing code style.
 
-## Step 5: PostHog Actions (document for manual setup)
+## Step 5: PostHog Actions — create them for the user, don't hand off work
 
-If the plan defines PostHog Actions, these are created in the PostHog UI — not in code. Add a comment or note in the tracking plan indicating which Actions need to be created manually:
+PostHog Actions group autocaptured events into business-meaningful names (e.g., all CTA clicks → "Signup CTA clicked"). They're **optional** — the raw autocaptured data exists without them. Actions just make dashboards and funnels easier to build in the PostHog UI.
 
-```markdown
-<!-- PostHog Actions to create in UI:
-- "Signup CTA clicked" — $autocapture where button text contains "Request access" OR "Get started"
-- "Pricing page viewed" — $pageview where URL contains /pricing
--->
+**Do NOT dump a list of Actions on the user and tell them to create them manually.** That's pushing work back to the user. Instead, offer to create them automatically.
+
+### How to handle Actions
+
+Ask the user ONE question via AskUserQuestion with these options:
+
+1. **Create Actions automatically** — "I'll need your PostHog personal API key (a separate key from the project token — create one at Settings > Personal API keys). Takes 10 seconds."
+2. **Skip Actions** — "The raw autocaptured data is already tracked. You can create Actions later from the PostHog UI if you want dashboard shortcuts."
+3. **Generate a script** — "I'll write a shell script you can run once to create all the Actions. Check it and run it when ready."
+
+### If the user picks "Create Actions automatically":
+
+Use the PostHog Actions API: `POST /api/projects/{project_id}/actions/`.
+
+For each Action in the plan, send:
+```bash
+curl -X POST "https://us.i.posthog.com/api/projects/{project_id}/actions/" \
+  -H "Authorization: Bearer $PERSONAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Signup CTA clicked",
+    "description": "Visitor clicks any signup CTA",
+    "steps": [{
+      "event": "$autocapture",
+      "text": "Request access",
+      "text_matching": "contains"
+    }]
+  }'
 ```
+
+Report what was created. Do NOT ask the user to verify in the UI — you made the API calls, you know they succeeded.
+
+### If the user picks "Generate a script":
+
+Create `scripts/setup-posthog-actions.sh` with all the curl commands. Include instructions at the top of the file for how to run it. Do NOT add this script to the commit — it's a one-time setup helper.
+
+### If the user picks "Skip Actions":
+
+Fine. Note in the summary that Actions were skipped and the user can create them from the plan later.
+
+**Never** present a list of Actions and say "create these manually in the UI." That's a skill failing at its job.
 
 ## Step 6: Verify implementation matches the plan
 
