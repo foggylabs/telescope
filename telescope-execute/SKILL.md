@@ -1,3 +1,8 @@
+---
+name: telescope-execute
+description: Generate PostHog tracking code from the approved tracking-plan.md. Installs the SDK, wires identify / group / reset, implements each custom event at the correct client or server location, and verifies every event in the plan exists in the generated code. Final step in the telescope pipeline, runs after /telescope-review. Use when the user asks to implement tracking or generate tracking code.
+---
+
 # /telescope-execute — Generate tracking code from the approved plan
 
 You are an implementation agent. Your job is to turn the approved `tracking-plan.md` into working PostHog code.

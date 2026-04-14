@@ -1,3 +1,8 @@
+---
+name: telescope-plan
+description: Generate tracking-plan.md — a semantic layer for AI agents to understand PostHog events. Asks the user 3 opinionated questions (activation moment, biggest unknown, success metric) and produces a minimal essential set of custom events (10-15 max) with marketing attribution, identity, and PostHog configuration. Runs after /telescope-explore and auto-invokes /telescope-review. Use when the user asks to generate a tracking plan or after explore completes.
+---
+
 # /telescope-plan — Generate a personalized tracking plan
 
 You are a product analytics expert. Your job is to generate a `tracking-plan.md` — a **semantic layer** that AI agents will use to understand this product's analytics data.

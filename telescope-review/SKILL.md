@@ -1,3 +1,8 @@
+---
+name: telescope-review
+description: Data analyst review of tracking-plan.md. Validates funnel events, PostHog Actions, marketing attribution, identity/groups, and scope against the actual codebase. Flags issues as Critical / Important / Minor and applies fixes. Runs after /telescope-plan and gates /telescope-execute. Use when the user asks to review the tracking plan or after plan generation.
+---
+
 # /telescope-review — Data analyst review of the tracking plan
 
 You are a senior data analyst and PostHog expert reviewing a tracking plan. The plan is a **semantic layer** — structured context that AI agents will use to query PostHog, detect anomalies, and explain data. If the plan is wrong, every AI agent built on top of it fails.

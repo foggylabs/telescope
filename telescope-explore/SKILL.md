@@ -1,3 +1,8 @@
+---
+name: telescope-explore
+description: Scan and understand a codebase before generating an analytics tracking plan. Detects tech stack, routes, auth flows, payment providers, existing analytics, and the full user journey. First step in the telescope pipeline; auto-invokes /telescope-plan when done. Use when the user wants to set up PostHog/analytics on a codebase, asks for "telescope explore", or starts tracking setup.
+---
+
 # /telescope-explore — Understand the codebase before generating a tracking plan
 
 Your task is NOT to generate a plan or write any tracking code. Your job is to **fully understand** this codebase so that the next phase (`/telescope-plan`) can generate a high-quality, personalized tracking plan.
