@@ -125,12 +125,14 @@ Present your findings as a structured summary:
 - Model: [subscription / one-time / freemium / quota / pre-revenue]
 - Pricing: [tiers if detected]
 
-### What I'll track
-- Marketing site: [yes — list key pages]
-- App frontend: [yes — list key user actions]
-- Backend API: [yes — list key server-side events]
-- Payments: [yes/pre-revenue — list payment events if applicable]
+### Tracking surface (areas, NOT specific events)
+- Marketing site: [yes/no — list key pages that exist, e.g., `/`, `/pricing`, `/integrations`]
+- App frontend: [yes/no — list user-action areas, e.g., "auth flow", "onboarding", "core feature X", "settings"]
+- Backend API: [yes/no — list state-change domains, e.g., "user lifecycle", "core feature X", "billing", "team/invites"]
+- Payments: [yes/no/pre-revenue — note what payment integration exists, if any]
 ```
+
+**Critical: do NOT enumerate specific event names in this section.** That is `/telescope-plan`'s job. Explore identifies areas/domains; plan picks the minimal essential events (10-15 max) after asking the user the activation question. If you list specific event names here (e.g., `user_signed_up`, `connector_configured`, `investigation_started`), you anchor the plan to your guesses before scope discipline can be applied — and you may pre-commit to events PostHog autocaptures (page views, CTA clicks, form submits) that should never be custom events.
 
 Do NOT include a "Questions & Ambiguities" section unless there are genuine ambiguities that you cannot resolve by reading the code. If you have ambiguities, they should be specific: "I found two signup flows in `/auth/signup.ts` and `/api/register.ts` — which is the primary one?" Never ask open-ended questions like "should I track the backend?"
 
