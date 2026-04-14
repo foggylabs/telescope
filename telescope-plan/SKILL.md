@@ -54,7 +54,7 @@ Ask the user exactly 3 questions using AskUserQuestion. For each question, **off
      - Repeat-buy goods (fashion, beauty, food, subscriptions) → first **repeat** purchase (the real satisfaction signal; one purchase could be a fluke)
      - Avoid "value received" framing — actual value happens off-site at delivery and isn't trackable from code
    - **Marketplace**: "When does a user first complete a transaction?" (first booking, first listing posted, first inquiry sent)
-   - **Other** (mobile, media, community, etc.): "What's the first action that signals a user got value from your product?"
+   - **Other** (media, community, api, etc.): "What's the first action that signals a user got value from your product?"
 
    Then generate 3-4 concrete choices from the core actions found during explore, framed in the product's own vocabulary. Always include a "Something else" option.
 
@@ -81,7 +81,7 @@ generated: "<ISO 8601 timestamp>"
 generator: "telescope/0.1.0"
 product:
   name: "<from explore>"
-  type: "<from explore>"  # saas | ecommerce | marketplace | mobile_app | media | community | api | other
+  type: "<from explore>"  # saas | ecommerce | marketplace | media | community | api | other
   business_model: "<from explore>"  # subscription | one_time_purchase | freemium | transactional | ad_supported | commission | free
   stage: "<from explore>"  # pre_revenue | has_users | has_revenue
 analytics:

@@ -18,6 +18,41 @@ Your exploration directly determines the quality of that semantic layer. If you 
 - **Read the actual code, not just file names.** Understanding what the product does requires reading auth flows, core feature handlers, payment logic, and onboarding flows — not just listing routes.
 - **Only ask about genuine ambiguities.** Things you can't determine from the code — e.g., "I found two signup flows, which is the primary one?" Never ask about technical decisions that you should make yourself.
 
+## Step 0: Platform check (run FIRST, before anything else)
+
+Telescope supports web apps today (SaaS, e-commerce, marketplace, community, media). Native mobile apps are not yet supported — the skill would generate a web-shaped plan that doesn't match mobile SDK patterns, screen-based navigation, or mobile attribution. Detect mobile-only codebases up front and exit cleanly before generating anything wrong.
+
+### Mobile indicators
+
+Check for:
+- `Podfile`, `*.xcodeproj`, or `ios/` directory → iOS native (Swift/Objective-C)
+- `build.gradle` / `build.gradle.kts` containing `com.android.application`, or `android/` directory → Android native (Kotlin/Java)
+- `pubspec.yaml` → Flutter
+- `package.json` with `react-native` in dependencies → React Native
+- `app.json` or `expo.json` with Expo config → Expo
+
+### Web-output indicators (mobile alongside web is OK — plan for the web part)
+
+Check for:
+- `react-native-web` in dependencies → React Native that also builds to web
+- Flutter `web/` directory → Flutter Web
+- Expo `app.json` with `"platforms"` array containing `"web"` → Expo targeting web
+- Any web framework alongside (Next.js, Vite, standalone React/Vue/Svelte app in the monorepo)
+
+### Decision
+
+- **Only mobile indicators, no web output found** → STOP. Tell the user:
+
+  > I detected a mobile app ([Swift/Kotlin/Flutter/React Native/etc.]). Telescope currently supports web apps only — the plan it generates would not match your mobile stack (wrong SDK, screen tracking differs, no marketing-site concept, different attribution). Mobile support is planned for a later release.
+  >
+  > For now, follow PostHog's mobile SDK guide directly: https://posthog.com/docs/libraries
+
+  Do NOT continue to stack detection, do NOT ask questions, do NOT run `/telescope-plan`. End the conversation here.
+
+- **Mobile + web output (e.g., React Native Web, Expo targeting web, Flutter Web, or a monorepo with a separate web app)** → continue. Plan only for the web target. Note explicitly in the exploration summary that mobile-native tracking is out of scope and is a separate future effort.
+
+- **Only web indicators** → continue to Step 1 as normal.
+
 ## What to explore
 
 ### 1. Stack detection
