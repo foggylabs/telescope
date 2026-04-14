@@ -49,7 +49,10 @@ Ask the user exactly 3 questions using AskUserQuestion. For each question, **off
 
 1. **Activation**: phrase the question based on product `type` from explore:
    - **SaaS**: "What's the aha moment for a new user?"
-   - **E-commerce**: "When does a customer first get value from your store?" (typically first purchase, sometimes first add-to-cart)
+   - **E-commerce**: "What conversion event best signals an activated customer?" — note that the right answer depends on the product:
+     - One-shot or considered purchases (furniture, electronics, courses) → first purchase
+     - Repeat-buy goods (fashion, beauty, food, subscriptions) → first **repeat** purchase (the real satisfaction signal; one purchase could be a fluke)
+     - Avoid "value received" framing — actual value happens off-site at delivery and isn't trackable from code
    - **Marketplace**: "When does a user first complete a transaction?" (first booking, first listing posted, first inquiry sent)
    - **Other** (mobile, media, community, etc.): "What's the first action that signals a user got value from your product?"
 
