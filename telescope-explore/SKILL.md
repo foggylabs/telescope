@@ -62,13 +62,24 @@ Check for:
 
 ### 1. Stack detection
 
-Read dependency and config files to identify the tech stack:
+Read dependency and config files to identify the tech stack.
 
-- **Language & framework**: Read `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `Gemfile`, `pubspec.yaml`, `composer.json`
+**Read root-level files directly. Do NOT use `**/package.json` or `**/pyproject.toml` style globs** — they explode in real repos (vendored libs, `node_modules`, `.venv`, git worktrees easily produce 100+ matches and bury the actual signal). Read the file at the path directly with the Read tool; if it's not there, move on.
+
+- **Language & framework**: Read root-level `package.json`, `requirements.txt`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Gemfile`, `pubspec.yaml`, `composer.json`
   - Identify: Next.js (App Router vs Pages Router), React, Vue, Svelte, Express, Django, Flask, Rails, Go, Rust, etc.
-- **Deployment**: Check for `vercel.json`, `netlify.toml`, `fly.toml`, `Dockerfile`, `render.yaml`, `app.yaml`, `railway.json`
-- **Package manager**: Detect from lockfile — `bun.lock`, `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `Pipfile.lock`, `poetry.lock`
-- **Monorepo structure**: If multiple apps exist (frontend + backend, marketing site + app), identify all of them. All will be tracked.
+- **Deployment**: Check for root-level `vercel.json`, `netlify.toml`, `fly.toml`, `Dockerfile`, `render.yaml`, `app.yaml`, `railway.json`
+- **Package manager**: Detect from root-level lockfile — `bun.lock`, `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `Pipfile.lock`, `poetry.lock`
+- **Monorepo structure**: If the root `package.json` has a `workspaces` field, or you see `pnpm-workspace.yaml`, `turbo.json`, `lerna.json`, `nx.json`, `rush.json`, the repo is a monorepo. Read the workspace config to get the list of app paths — then read each app's `package.json` / `pyproject.toml` directly. Don't glob.
+
+If you must glob (e.g., the workspace config doesn't enumerate apps explicitly), exclude these directories — they're never product code:
+
+- `node_modules/`, `vendor/`, `.venv/`, `venv/`, `__pycache__/`
+- `.worktrees/` (developer-local git worktrees, often full project copies)
+- `dist/`, `build/`, `.next/`, `.nuxt/`, `out/`, `target/`
+- `.git/`, `.cache/`, `.turbo/`, `coverage/`
+
+Prefer shallow globs over `**` — e.g., `*/package.json` and `*/*/package.json` cover most monorepo layouts without traversing into vendored or generated trees.
 
 ### 2. PostHog status
 
