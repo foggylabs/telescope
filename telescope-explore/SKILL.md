@@ -122,7 +122,7 @@ Present your findings as a structured summary:
 
 ### Revenue
 - Payment provider: [detected or "pre-revenue"]
-- Model: [subscription / one-time / freemium / quota / pre-revenue]
+- Model: [subscription / one_time_purchase / freemium / transactional / ad_supported / commission / contact_sales / free / pre-revenue]
 - Pricing: [tiers if detected]
 
 ### Tracking surface (areas, NOT specific events)

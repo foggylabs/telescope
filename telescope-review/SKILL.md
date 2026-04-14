@@ -38,7 +38,7 @@ For each event:
 
 ### Frontmatter review
 
-1. **Is `business_model` accurate?** — Cross-reference with what explore found. If no payment provider is installed and billing is manual/"Contact us", it cannot be `"subscription"`. Use `"freemium"`, `"contact_sales"`, or `"free"` as appropriate. Flag as Important if wrong.
+1. **Is `business_model` accurate?** — Cross-reference with what explore found. Pick from: `subscription` (recurring SaaS), `one_time_purchase` (ecommerce), `freemium` (free tier + upgrades), `transactional` (per-action fees), `ad_supported` (free, monetized via ads), `commission` (marketplace take rate), `contact_sales` (manual billing), `free` (no monetization). If no payment provider is installed and billing is manual/"Contact us", it cannot be `"subscription"`. Flag as Important if wrong.
 2. **Is `stage` accurate?** — `pre_revenue` if no payment flow exists. `has_users` if users exist but no billing. `has_revenue` only if actual payment processing is in place.
 3. **Is `activation_event` defined?** — The plan should specify which event is the activation moment. Flag as Important if missing.
 4. **Is `north_star_metric` defined?** — The plan should specify the one metric that matters most. Flag as Minor if missing.
@@ -49,7 +49,7 @@ For each event:
 2. **Is `posthog.reset()` called on logout?** — Required to prevent event leakage between users on shared devices. Flag as Important if missing.
 3. **Are person properties business-specific only?** — `$initial_referrer`, `$initial_utm_source` etc. are auto-set. Only add properties PostHog can't infer.
 4. **Are `$set` properties lightweight?** — Properties updated on every `identify()` call (every page load) must not require expensive DB queries. If a property needs a COUNT or JOIN to compute, it should be updated incrementally when the underlying data changes (e.g., on team-member add/remove, on item creation), not re-fetched on every page load. Flag as Important if heavy queries are needed per page load.
-5. **Is Group Analytics defined?** — Required for multi-tenant / B2B. Critical if missing.
+5. **Is Group Analytics defined?** — Required if the product has shared spaces between users (teams/workspaces in SaaS, stores in marketplaces, channels in community apps, organizations in B2B). Skip the check entirely if the product is single-player. Critical if missing when a shared-space concept exists in the codebase.
 6. **Do server-side events specify `distinct_id` source?** — Critical if missing.
 
 ### Marketing Attribution review

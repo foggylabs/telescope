@@ -47,8 +47,13 @@ The explore phase already discovered the product name, stack, routes, auth, paym
 
 Ask the user exactly 3 questions using AskUserQuestion. For each question, **offer selectable choices based on what you found during explore** — don't ask open-ended free-text questions.
 
-1. **Activation**: "What's the aha moment for a new user?"
-   - Generate 3-4 choices from the core actions found during explore
+1. **Activation**: "What's the first moment a user gets real value from your product?"
+   - For SaaS: typically a core feature usage (e.g., first message sent, first task completed, first dashboard created)
+   - For e-commerce: typically first purchase, or first add-to-cart for higher-funnel activation
+   - For marketplace: first booking made, first listing posted
+   - For media/content: first piece of content consumed past a meaningful threshold (e.g., watched >30s, read >50%)
+   - For mobile apps: first session past onboarding completion
+   - Generate 3-4 choices from the core actions found during explore, tailored to the product type
    - Always include a "Something else" option
 
 2. **Biggest unknown**: "What's the #1 thing you wish you knew?"
@@ -74,9 +79,9 @@ generated: "<ISO 8601 timestamp>"
 generator: "telescope/0.1.0"
 product:
   name: "<from explore>"
-  type: "saas"           # saas | marketplace | api | mobile | ecommerce | other
-  business_model: "subscription"  # subscription | freemium | transactional | ad_supported | free
-  stage: "pre_revenue"   # pre_revenue | has_users | has_revenue
+  type: "<from explore>"  # saas | ecommerce | marketplace | mobile_app | media | community | api | other
+  business_model: "<from explore>"  # subscription | one_time_purchase | freemium | transactional | ad_supported | commission | free
+  stage: "<from explore>"  # pre_revenue | has_users | has_revenue
 analytics:
   provider: "posthog"
   project_id: ""
@@ -184,14 +189,19 @@ No custom `register_once()` or `$set_once` needed for attribution — PostHog ha
 ### Section 4: Identity & Groups (required)
 
 **User identification:**
-- When to call `posthog.identify()` (on login, on signup, on page load when authenticated)
+- When to call `posthog.identify()` — depends on product type:
+  - SaaS / authenticated apps: on login, on signup, on page load when authenticated
+  - E-commerce: at checkout email entry (guest checkout) and on account login if signup exists
+  - Mobile apps: on auth + on app launch when authenticated
+  - Media/content: on subscription/account creation; otherwise leave anonymous
 - What person properties to set via `$set` (updateable) and `$set_once` (immutable)
 - Note: `$initial_referrer`, `$initial_utm_source` etc. are already set by PostHog — only add business-specific person properties
 
-**Group analytics** (for B2B / multi-tenant products):
-- Define group types (e.g., `project`, `company`, `workspace`)
+**Group analytics** (for products with shared spaces — teams in SaaS, stores in marketplaces, channels in community apps, organizations in B2B):
+- Define group types (e.g., `project`, `workspace`, `store`, `channel`, `organization`)
 - When to call `posthog.group()`
 - What group properties to set
+- Skip this section if the product is single-player (no shared spaces between users)
 
 ### Section 5: Event Properties (recommended)
 

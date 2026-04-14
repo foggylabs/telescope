@@ -59,7 +59,9 @@ Call `posthog.reset()` on logout.
 
 **Server-side** — every `capture()` call needs `distinct_id` from the authenticated session.
 
-## Step 3: Group analytics (for B2B / multi-tenant)
+## Step 3: Group analytics (for products with shared spaces)
+
+Applies to any product with shared spaces between users — teams/workspaces in SaaS, stores in marketplaces, channels in community apps, organizations in B2B. Skip if the plan doesn't define group types.
 
 If the plan defines group types:
 
